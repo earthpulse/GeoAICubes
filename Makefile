@@ -5,7 +5,9 @@ VIEWER_DIR := apps/viewer
 
 COMPOSE := docker compose -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE)
 
-.PHONY: help check test api ui build up up-d down logs minio-up minio-down
+.PHONY: help check test api ui build up up-d down logs minio-up minio-down inventory-export
+
+INVENTORY_EXPORT := docs/data-plane/inventory-export.json
 
 help:
 	@echo "Local dev (requires: uv sync; ui also needs bun install in $(VIEWER_DIR))"
@@ -19,8 +21,9 @@ help:
 	@echo "  make up                docker compose up --build (foreground; streams logs here)"
 	@echo "  make up-d              docker compose up -d (background; open http://localhost:5173)"
 	@echo "  make logs              follow api + ui container logs (after up-d)"
-	@echo "  make minio-up          MinIO only in Docker (:9000 / :9001) for native API/UI dev"
+	@echo "  make minio-up          MinIO only (:9000 / :9001) for native API/UI dev"
 	@echo "  make minio-down        Stop MinIO container"
+	@echo "  make inventory-export  Snapshot GET /api/v1/inventory/zarr → $(INVENTORY_EXPORT)"
 	@echo "  make down              docker compose down ($(COMPOSE_FILE))"
 
 check:
@@ -59,10 +62,13 @@ logs:
 minio-up:
 	$(COMPOSE) up -d minio
 	@echo "MinIO S3: http://localhost:9000  console: http://localhost:9001"
-	@echo "Native API: demo.yaml uses GEOAICUBES_STORAGE__ENDPOINT_URL=http://localhost:9000"
+	@echo "In-place data dir: repo data/ (create buckets from console or mc if you need S3 clients)"
 
 minio-down:
 	$(COMPOSE) stop minio
 
 down:
 	$(COMPOSE) down
+
+inventory-export:
+	uv run geoaicubes inventory-export --output $(INVENTORY_EXPORT)

@@ -1,0 +1,56 @@
+{
+  "stores": [
+    {
+      "id": "Geodatacube_orto2024.zarr",
+      "uri": "s3://data/GEODATACUBE_ZARR_openEO/Geodatacube_orto2024.zarr/",
+      "path": "data/GEODATACUBE_ZARR_openEO/Geodatacube_orto2024.zarr/",
+      "status": "ok",
+      "error": null,
+      "dims": ["time", "y", "x"],
+      "variables": [
+        {
+          "name": "B04",
+          "dtype": "uint16",
+          "shape": [12, 2048, 2048]
+        }
+      ],
+      "crs": "EPSG:25831",
+      "extent": {
+        "bbox": [418000.0, 4625000.0, 422000.0, 4629000.0],
+        "crs": "EPSG:25831"
+      },
+      "time": {
+        "dim": "time",
+        "values": null,
+        "start": "2024-01-01T00:00:00Z",
+        "end": "2024-12-01T00:00:00Z",
+        "count": 12
+      },
+      "nodata": {
+        "B04": null
+      },
+      "chunks": {
+        "B04": { "time": 1, "y": 512, "x": 512 }
+      },
+      "tile_url_template": {
+        "B04": "/tiles/zarr/Geodatacube_orto2024.zarr/B04/{z}/{x}/{y}.png"
+      }
+    },
+    {
+      "id": "broken_store.zarr",
+      "uri": "s3://data/GEODATACUBE_ZARR_openEO/broken_store.zarr/",
+      "path": "data/GEODATACUBE_ZARR_openEO/broken_store.zarr/",
+      "status": "error",
+      "error": "Failed to open Zarr store: invalid metadata",
+      "dims": [],
+      "variables": [],
+      "crs": null,
+      "extent": null,
+      "time": null,
+      "nodata": {},
+      "chunks": {},
+      "tile_url_template": {}
+    }
+  ],
+  "count": 2
+}

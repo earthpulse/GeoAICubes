@@ -1,6 +1,8 @@
 # GeoAICubes viewer
 
-Step 0 Svelte shell under `apps/viewer/`. The UI talks to the API only (`GET {VITE_API_BASE_URL}/health` on mount).
+Step 1 discovery viewer under `apps/viewer/`. The UI talks to the API only: `GET /health`, `GET /api/v1/inventory/zarr`, and TiTiler tile URLs from inventory templates (no Zarr/Xarray in the browser).
+
+Layout and data flow: [`docs/data-plane/viewer-ia.md`](../../docs/data-plane/viewer-ia.md).
 
 ## Setup
 
@@ -18,6 +20,8 @@ bun run preview  # serve dist/
 ```
 
 Set `VITE_API_BASE_URL` before `bun run build` when the API is not at `http://localhost:8000` (Compose uses build-time `ARG` in the UI image).
+
+**Compose dev:** `deploy/docker-compose.yml` bind-mounts this directory into the UI service (Vite HMR). Rebuild the UI image only when `package.json` / `bun.lock` change; then `docker compose exec ui bun install` if needed.
 
 ## Workflow test
 

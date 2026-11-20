@@ -1,5 +1,14 @@
 # Local demo stack: API, viewer UI, MinIO (CPU-only).
 #   docker compose -f deploy/docker-compose.yml --env-file config/.env.example up --build
+#
+# Step 1 storage (docs/demo-config.md): in-place MinIO over host data/ — bind-mount
+# ../data:/data (not ../data/minio). No separate init job; MinIO uses the mounted tree
+# directly. The API bind-mounts the same host tree for inventory/TiTiler (filesystem).
+#
+# Dev: api/ui source bind-mounts + reload (rebuild images only when deps or Dockerfile change).
+#
+# TiTiler: titiler-xarray is mounted on the API process (single host on :8000), not a
+# separate Compose service — see docs/data-plane/titiler-integration.md.
 name: geoaicubes
 
 services:
@@ -13,7 +22,13 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-geoaicubes}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-geoaicubes-dev-only}
     volumes:
-      - ../data/minio:/data
+      - ../data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
 
   api:
     build:
@@ -23,8 +38,33 @@ services:
       - "8000:8000"
     environment:
       GEOAICUBES_CORS_ORIGINS: ${GEOAICUBES_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      GEOAICUBES_STORAGE__DISCOVERY_MODE: filesystem
+      GEOAICUBES_STORAGE__ENDPOINT_URL: http://minio:9000
+      GEOAICUBES_STORAGE__BUCKET: ${GEOAICUBES_STORAGE__BUCKET:-data}
+      GEOAICUBES_STORAGE__PREFIX: ${GEOAICUBES_STORAGE__PREFIX:-GEODATACUBE_ZARR_openEO}
+      GEOAICUBES_STORAGE__ACCESS_KEY_ID: ${GEOAICUBES_STORAGE__ACCESS_KEY_ID:-geoaicubes}
+      GEOAICUBES_STORAGE__SECRET_ACCESS_KEY: ${GEOAICUBES_STORAGE__SECRET_ACCESS_KEY:-geoaicubes-dev-only}
+      GEOAICUBES_STORAGE__REGION: ${GEOAICUBES_STORAGE__REGION:-us-east-1}
+      GEOAICUBES_STORAGE__USE_SSL: ${GEOAICUBES_STORAGE__USE_SSL:-false}
+      GEOAICUBES_STORAGE__LOCAL_ROOT: /data/GEODATACUBE_ZARR_openEO
+    volumes:
+      - ../data:/data:ro
+      - ../src:/app/src:ro
+    command:
+      [
+        "uvicorn",
+        "geoaicubes.api.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--reload-dir",
+        "/app/src",
+      ]
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
 
   ui:
     build:
@@ -34,5 +74,11 @@ services:
         VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
     ports:
       - "5173:5173"
+    volumes:
+      - ../apps/viewer:/app
+      - ui_node_modules:/app/node_modules
     depends_on:
       - api
+
+volumes:
+  ui_node_modules:

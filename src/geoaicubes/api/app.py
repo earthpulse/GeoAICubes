@@ -11,7 +11,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from geoaicubes import __version__
-from geoaicubes.api.routes import health
+from geoaicubes.api.routes import health, inventory
+from geoaicubes.api.tiles import mount_zarr_tiler
+from geoaicubes.io.s3 import apply_s3_env
 from geoaicubes.logging_config import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -34,6 +36,7 @@ def cors_allow_origins() -> list[str]:
 @asynccontextmanager
 async def _lifespan(app: FastAPI):
     configure_logging()
+    apply_s3_env()
     logger.info("GeoAICubes API ready")
     yield
 
@@ -56,4 +59,6 @@ def create_app(**kwargs: Any) -> FastAPI:
     )
 
     app.include_router(health.router)
+    app.include_router(inventory.router, prefix="/api/v1")
+    mount_zarr_tiler(app)
     return app

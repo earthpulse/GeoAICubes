@@ -1,0 +1,162 @@
+openapi: 3.1.0
+info:
+  title: GeoAICubes inventory API (fragment)
+  version: 0.1.0
+  description: >-
+    Step 1 D2 schema for Zarr store inventory. Merge into the main API OpenAPI
+    when I4 registers routes on the FastAPI app.
+paths:
+  /api/v1/inventory/zarr:
+    get:
+      operationId: listZarrInventory
+      summary: List discovered Zarr stores and metadata
+      tags: [inventory]
+      responses:
+        "200":
+          description: Inventory list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZarrInventoryList"
+  /api/v1/inventory/zarr/{id}:
+    get:
+      operationId: getZarrInventory
+      summary: Single store inventory by id
+      tags: [inventory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Store id (e.g. Geodatacube_orto2024.zarr)
+      responses:
+        "200":
+          description: Store inventory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZarrStoreInventory"
+        "404":
+          description: Unknown store id (discovery did not find this id)
+components:
+  schemas:
+    ZarrInventoryList:
+      type: object
+      required: [stores, count]
+      properties:
+        stores:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZarrStoreInventory"
+        count:
+          type: integer
+          minimum: 0
+    ZarrStoreInventory:
+      type: object
+      required:
+        - id
+        - uri
+        - path
+        - status
+        - error
+        - dims
+        - variables
+        - crs
+        - extent
+        - nodata
+        - chunks
+        - tile_url_template
+      properties:
+        id:
+          type: string
+        uri:
+          type: string
+          format: uri
+        path:
+          type: string
+        status:
+          type: string
+          enum: [ok, error]
+        error:
+          type: ["string", "null"]
+        dims:
+          type: array
+          items:
+            type: string
+        variables:
+          type: array
+          items:
+            $ref: "#/components/schemas/InventoryVariable"
+        crs:
+          type: ["string", "null"]
+        extent:
+          oneOf:
+            - $ref: "#/components/schemas/InventoryExtent"
+            - type: "null"
+        time:
+          oneOf:
+            - $ref: "#/components/schemas/InventoryTime"
+            - type: "null"
+        nodata:
+          type: object
+          additionalProperties:
+            oneOf:
+              - type: number
+              - type: "null"
+        chunks:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: integer
+        tile_url_template:
+          type: object
+          additionalProperties:
+            type: string
+          description: Per renderable variable — URL template with {z},{x},{y} placeholders
+    InventoryVariable:
+      type: object
+      required: [name, dtype, shape]
+      properties:
+        name:
+          type: string
+        dtype:
+          type: string
+        shape:
+          type: array
+          items:
+            type: integer
+    InventoryExtent:
+      type: object
+      required: [bbox, crs]
+      properties:
+        bbox:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+        crs:
+          type: string
+    InventoryTime:
+      type: object
+      required: [dim]
+      properties:
+        dim:
+          type: string
+        values:
+          oneOf:
+            - type: array
+              items:
+                type: string
+                format: date-time
+            - type: "null"
+        start:
+          type: ["string", "null"]
+          format: date-time
+        end:
+          type: ["string", "null"]
+          format: date-time
+        count:
+          type: ["integer", "null"]
