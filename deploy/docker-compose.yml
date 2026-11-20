@@ -1,0 +1,49 @@
+# Local demo stack: API, viewer UI, MinIO (CPU-only).
+#   docker compose -f deploy/docker-compose.yml --env-file config/.env.example up --build
+name: geoaicubes
+
+services:
+  minio:
+    image: elestio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-geoaicubes}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-geoaicubes-dev-only}
+    volumes:
+      - ../data/minio:/data
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: ../config/.env
+        required: false
+    environment:
+      GEOAICUBES_PATHS__DATA_ROOT: /app/data
+      GEOAICUBES_STORAGE__ENDPOINT_URL: http://minio:9000
+      GEOAICUBES_STORAGE__BUCKET: ${MINIO_BUCKET:-geoaicubes-demo}
+      GEOAICUBES_STORAGE__ACCESS_KEY_ID: ${MINIO_ROOT_USER:-geoaicubes}
+      GEOAICUBES_STORAGE__SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-geoaicubes-dev-only}
+      GEOAICUBES_CORS_ORIGINS: ${GEOAICUBES_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
+    volumes:
+      - ../data:/app/data
+      - ../config:/app/config:ro
+    depends_on:
+      - minio
+
+  ui:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.ui
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api

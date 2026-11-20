@@ -1,0 +1,18 @@
+# Build context is repo root (deploy/Dockerfile.*). Keep uploads small and stable.
+
+data/
+.venv/
+.git/
+.cursor/
+.claude/
+references/
+tasks/
+docs/
+
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+
+# Viewer deps are installed in the image; host node_modules must not bust cache.
+apps/viewer/node_modules/
+apps/viewer/dist/

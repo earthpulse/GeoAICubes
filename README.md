@@ -2,6 +2,18 @@
 
 ICGC GeoDataCubes and related [datacloud](https://datacloud.icgc.cat/datacloud/) assets.
 
+## Project layout
+
+| Path | Purpose |
+|------|---------|
+| `src/geoaicubes/` | Python library (shared by notebooks, API, exports, benchmarks) |
+| `config/` | Demo and runtime configuration (YAML/TOML; secrets via env, not in repo) |
+| `deploy/` | Docker Compose and deployment assets |
+| `apps/viewer/` | Web viewer UI (talks to the API only) |
+| `scripts/` | CLI helpers (e.g. datacloud fetch) |
+| `docs/` | Project documentation |
+| `data/` | Downloaded datasets (gitignored) |
+
 ## Setup
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (macOS/Linux example):

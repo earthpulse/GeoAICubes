@@ -1,4 +1,7 @@
 data
 .venv
 .cursor/*
-!.cursor/rules/
+references/
+tasks/
+.claude/
+__pycache__/
