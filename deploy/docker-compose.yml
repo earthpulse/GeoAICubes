@@ -1,14 +1,3 @@
-# Local demo stack: API, viewer UI, MinIO (CPU-only).
-#   docker compose -f deploy/docker-compose.yml --env-file config/.env.example up --build
-#
-# Step 1 storage (docs/demo-config.md): in-place MinIO over host data/ — bind-mount
-# ../data:/data (not ../data/minio). No separate init job; MinIO uses the mounted tree
-# directly. The API bind-mounts the same host tree for inventory/TiTiler (filesystem).
-#
-# Dev: api/ui source bind-mounts + reload (rebuild images only when deps or Dockerfile change).
-#
-# TiTiler: titiler-xarray is mounted on the API process (single host on :8000), not a
-# separate Compose service — see docs/data-plane/titiler-integration.md.
 name: geoaicubes
 
 services:
