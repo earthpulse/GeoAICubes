@@ -14,7 +14,7 @@ help:
 	@echo "  make api               FastAPI via uvicorn (reload; port from GEOAICUBES_API_PORT)"
 	@echo "  make ui                Viewer Vite dev server ($(VIEWER_DIR))"
 	@echo "  make build             Rebuild api/ui images (after Dockerfile or dep changes)"
-	@echo "  make up                docker compose up (foreground; streams Vite logs here)"
+	@echo "  make up                docker compose up --build (foreground; streams logs here)"
 	@echo "  make up-d              docker compose up -d (background; open http://localhost:5173)"
 	@echo "  make logs              follow api + ui container logs (after up-d)"
 	@echo "  make minio-up          MinIO only in Docker (:9000 / :9001) for native API/UI dev"
@@ -31,7 +31,7 @@ build:
 	$(COMPOSE) build
 
 up:
-	$(COMPOSE) up 
+	$(COMPOSE) up
 
 up-d:
 	$(COMPOSE) up -d --build

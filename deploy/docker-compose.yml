@@ -21,19 +21,8 @@ services:
       dockerfile: deploy/Dockerfile.api
     ports:
       - "8000:8000"
-    env_file:
-      - path: ../config/.env
-        required: false
     environment:
-      GEOAICUBES_PATHS__DATA_ROOT: /app/data
-      GEOAICUBES_STORAGE__ENDPOINT_URL: http://minio:9000
-      GEOAICUBES_STORAGE__BUCKET: ${MINIO_BUCKET:-geoaicubes-demo}
-      GEOAICUBES_STORAGE__ACCESS_KEY_ID: ${MINIO_ROOT_USER:-geoaicubes}
-      GEOAICUBES_STORAGE__SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-geoaicubes-dev-only}
       GEOAICUBES_CORS_ORIGINS: ${GEOAICUBES_CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
-    volumes:
-      - ../data:/app/data
-      - ../config:/app/config:ro
     depends_on:
       - minio
 
