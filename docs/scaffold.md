@@ -12,7 +12,7 @@ EarthPulse GeoAICubes Step 0 skeleton: library + CLI, FastAPI, Svelte viewer, Do
 
 ```bash
 uv sync
-make check    # ruff check, ruff format --check, pytest
+make check    # ruff check, ruff format --check, pytest (integration + unit)
 ```
 
 GitHub Actions runs the same on push/PR to `main`: [`.github/workflows/check.yml`](../.github/workflows/check.yml).
@@ -47,4 +47,4 @@ uv run geoaicubes ok
 
 ## Workflow UI test
 
-Keep the stack running, then run Cursor `/test` (see `tests/README.md`).
+Keep the stack running, then run Cursor `/test` (see `tests/e2e/README.md`).

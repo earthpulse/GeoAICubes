@@ -11,7 +11,7 @@ ICGC GeoDataCubes and related [datacloud](https://datacloud.icgc.cat/datacloud/)
 | `deploy/` | Docker Compose and deployment assets |
 | `apps/viewer/` | Web viewer UI (talks to the API only) |
 | `docs/` | Runbooks and config notes (`docs/scaffold.md`, `docs/demo-config.md`) |
-| `tests/` | `pytest` smoke tests and UI workflow catalog |
+| `tests/` | `pytest` (`integration/`, `unit/`) and e2e UI catalog (`e2e/`, Cursor `/test`) |
 | `data/` | Downloaded datasets (gitignored) |
 
 ## Setup

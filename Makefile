@@ -5,13 +5,14 @@ VIEWER_DIR := apps/viewer
 
 COMPOSE := docker compose -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE)
 
-.PHONY: help check api ui build up up-d down logs minio-up minio-down
+.PHONY: help check test api ui build up up-d down logs minio-up minio-down
 
 help:
 	@echo "Local dev (requires: uv sync; ui also needs bun install in $(VIEWER_DIR))"
-	@echo "UI test: make up (keep running) → Cursor /test"
+	@echo "pytest: make test (integration + unit) · e2e: make up → Cursor /test"
 	@echo ""
-	@echo "  make check             ruff check + format --check + pytest (dev group)"
+	@echo "  make check             ruff check + format --check + make test"
+	@echo "  make test              pytest (tests/integration, tests/unit)"
 	@echo "  make api               FastAPI via uvicorn (reload; port from GEOAICUBES_API_PORT)"
 	@echo "  make ui                Viewer Vite dev server ($(VIEWER_DIR))"
 	@echo "  make build             Rebuild api/ui images (after Dockerfile or dep changes)"
@@ -25,6 +26,9 @@ help:
 check:
 	uv run ruff check .
 	uv run ruff format --check .
+	$(MAKE) test
+
+test:
 	uv run pytest
 
 api:

@@ -27,7 +27,7 @@ With **`make up`** running, open the viewer and capture **one screenshot**.
 | Name | Value |
 |------|--------|
 | UI URL | `http://localhost:5173/` |
-| Screenshot | `tests/user-reports/screenshots/<date>-ui.png` |
+| Screenshot | `tests/e2e/user-reports/screenshots/<date>-ui.png` |
 
 ## Steps
 

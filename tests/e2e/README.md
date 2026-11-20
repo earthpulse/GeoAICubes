@@ -1,12 +1,22 @@
-# Tests
+# E2E — user workflow (`/test`)
 
-## Automated (pytest)
+Cursor agent checks with browser MCP (not collected by pytest).
+
+## Layout
+
+| Path | Role |
+|------|------|
+| `catalog.yaml` | Categories and scenario ids |
+| `categories/` | Story tables per category |
+| `scenarios/` | Step-by-step scripts |
+| `user-reports/` | Run reports and screenshots (gitignored) |
+
+## pytest (separate)
 
 ```bash
-make check    # or: uv run pytest
+make test     # tests/integration + tests/unit
+make check    # lint, format, make test
 ```
-
-Smoke tests live next to this file (`test_health.py`). UI workflow reports stay under `user-reports/` (gitignored).
 
 ## Workflow test (UI)
 

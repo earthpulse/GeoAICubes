@@ -1,5 +1,6 @@
 data
 .venv
+tests/e2e/user-reports/
 tests/user-reports/
 .cursor/*
 references/
