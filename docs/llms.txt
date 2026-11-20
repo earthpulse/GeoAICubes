@@ -1,0 +1,28 @@
+# GeoAICubes — agent quick index
+
+## Commands
+- uv sync
+- make check          # ruff src+tests, format, docs smoke, pytest
+- make test           # pytest integration + unit
+- make api / make ui  # native dev
+- make up-d           # Docker Compose stack
+
+## Layout
+- src/geoaicubes/     Python core (shared by API, CLI, notebooks, benchmarks)
+- apps/viewer/        Svelte UI — API only
+- config/.env.example Storage + API env SSOT template
+- docs/demo-config.md Storage, logging, MinIO runbook
+- docs/scaffold.md    Ports and health URLs
+- references/         Plec contracts (markdown + PDF)
+
+## Deliverables map
+- references/deliverables-technical-scope.md
+- references/implementation-roadmap.md
+
+## Tests
+- tests/integration/, tests/unit/ — pytest (CI)
+- tests/e2e/ — Cursor /test workflow
+
+## Boundaries
+- .cursor/rules/geoaicubes-context.mdc — architecture
+- .cursor/rules/viewer-api-boundary.mdc — no geospatial core in viewer

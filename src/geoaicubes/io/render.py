@@ -1,4 +1,7 @@
-"""Infer TiTiler visualization capabilities from Zarr metadata (no store-name hardcoding)."""
+"""Infer TiTiler visualization capabilities from Zarr metadata.
+
+No store-name hardcoding — driven by xarray structure and coords.
+"""
 
 from __future__ import annotations
 
@@ -30,9 +33,7 @@ RenderModeList = list[RenderMode]
 
 def _primary_variable(ds: xr.Dataset) -> str | None:
     renderable = [
-        name
-        for name in ds.data_vars
-        if len(set(ds[name].dims) & _SPATIAL) >= 2
+        name for name in ds.data_vars if len(set(ds[name].dims) & _SPATIAL) >= 2
     ]
     if not renderable:
         return None
@@ -85,7 +86,9 @@ def _default_rescale_per_band(dtype: str, bands: int) -> list[tuple[float, float
 
 def _dtype_is_integer(dtype: str) -> bool:
     normalized = dtype.lower()
-    return normalized.startswith("u") or normalized.startswith("i") or "int" in normalized
+    return (
+        normalized.startswith("u") or normalized.startswith("i") or "int" in normalized
+    )
 
 
 def _rgb_sel_from_labels(labels: list[str]) -> list[str]:
@@ -96,7 +99,7 @@ def _rgb_sel_from_labels(labels: list[str]) -> list[str]:
             picks.append(upper[name])
     if len(picks) == 3:
         return picks
-  # fall back to first three labels
+    # fall back to first three labels
     if len(labels) >= 3:
         return [labels[0], labels[1], labels[2]]
     return labels[:1]
@@ -149,11 +152,12 @@ def _legend_from_colormap(cmap: dict[int, list[int]]) -> list[LegendEntry]:
     items: list[LegendEntry] = []
     for value in sorted(k for k in cmap if k > 0):
         rgba = cmap[value]
+        alpha = (rgba[3] if len(rgba) > 3 else 255) / 255
         items.append(
             LegendEntry(
                 value=value,
                 label=str(value),
-                color=f"rgba({rgba[0]},{rgba[1]},{rgba[2]},{(rgba[3] if len(rgba) > 3 else 255) / 255:.2f})",
+                color=f"rgba({rgba[0]},{rgba[1]},{rgba[2]},{alpha:.2f})",
             )
         )
     return items[:24]
@@ -186,7 +190,9 @@ def infer_render_capability(
     if band_dim is not None:
         modes = ["rgb", "single"]
         rgb_labels = _rgb_sel_from_labels(band_dim.labels)
-        if {lab.upper() for lab in band_dim.labels} >= {n.upper() for n in _NOMINAL_RGB}:
+        label_upper = {lab.upper() for lab in band_dim.labels}
+        nominal_upper = {n.upper() for n in _NOMINAL_RGB}
+        if label_upper >= nominal_upper:
             sel[band_dim.name] = _rgb_sel_from_labels(band_dim.labels)
         elif (
             band_dim.name == "band"
@@ -291,7 +297,8 @@ def titiler_query_from_defaults(
             pairs.append(("rescale", f"{lo},{hi}"))
     elif use_mode == "categorical":
         if defaults.colormap:
-            pairs.append(("colormap", json.dumps(defaults.colormap, separators=(",", ":"))))
+            cmap_json = json.dumps(defaults.colormap, separators=(",", ":"))
+            pairs.append(("colormap", cmap_json))
         elif defaults.colormap_name:
             pairs.append(("colormap_name", defaults.colormap_name))
         else:
@@ -305,6 +312,4 @@ def titiler_query_from_defaults(
 
 
 def encode_query_pairs(pairs: list[tuple[str, str]]) -> str:
-    return "&".join(
-        f"{quote(k, safe='')}={quote(v, safe=',=:')}" for k, v in pairs
-    )
+    return "&".join(f"{quote(k, safe='')}={quote(v, safe=',=:')}" for k, v in pairs)

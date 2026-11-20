@@ -2,7 +2,7 @@
 
 | Path | Runner | Purpose |
 |------|--------|---------|
-| `tests/unit/` | `pytest` | Fast unit tests |
+| `tests/unit/` | `pytest` | Fast unit tests (open Zarr via `geoaicubes.io.inventory.open_dataset_for_tests`) |
 | `tests/integration/` | `pytest` | API and stack integration (e.g. `TestClient`) |
 | `tests/e2e/` | Cursor `/test` | AI-driven user workflow (catalog, scenarios, browser) |
 

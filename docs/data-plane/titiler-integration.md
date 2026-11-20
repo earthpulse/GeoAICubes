@@ -112,6 +112,16 @@ GET /tiles/zarr/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=...&variable=...&resca
 
 `deploy/docker-compose.yml` keeps **one `api` service** on port `8000`. TiTiler runs in that container; no `titiler:` service. The API receives `GEOAICUBES_STORAGE__*` (and MinIO-related env) so mounted tile code and inventory share MinIO endpoint, bucket, and credentials.
 
+## Viewer overrides (Step 1)
+
+Inventory responses include `tile_url_template` and per-variable `RenderCapability` defaults produced by `src/geoaicubes/io/render.py` (`titiler_query_from_defaults`). The viewer (`apps/viewer/src/lib/render/buildTileUrl.ts`) may **rebuild the query string** when the user changes time step, band selection, or render mode. Rules:
+
+1. **Server defaults are authoritative** for rescale, colormap, and nominal RGB band names inferred from Zarr metadata.
+2. The viewer may append or replace `sel`, `bidx`, and `rescale` query pairs to reflect UI state; keep semantics aligned with Python helpers — do not add ad hoc geospatial inference in TypeScript.
+3. Long term (D2.1): prefer API-resolved tile URLs so the viewer only swaps time/band indices.
+
+See `.cursor/rules/viewer-api-boundary.mdc`.
+
 ## Consequences
 
 - Wave 3 task **I5** implements `src/geoaicubes/api/tiles.py` and registers it from `create_app()`.

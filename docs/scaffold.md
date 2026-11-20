@@ -12,7 +12,7 @@ EarthPulse GeoAICubes Step 0–1 stack: library + CLI, FastAPI (inventory + moun
 
 ```bash
 uv sync
-make check    # ruff check, ruff format --check, pytest (integration + unit)
+make check    # ruff src+tests, format check, docs smoke, pytest (integration + unit)
 ```
 
 GitHub Actions runs the same on push/PR to `main`: [`.github/workflows/check.yml`](../.github/workflows/check.yml).

@@ -23,12 +23,6 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-geoaicubes-dev-only}
     volumes:
       - ../data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
 
   api:
     build:
@@ -63,8 +57,7 @@ services:
         "/app/src",
       ]
     depends_on:
-      minio:
-        condition: service_healthy
+      - minio
 
   ui:
     build:

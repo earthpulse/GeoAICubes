@@ -113,6 +113,11 @@ def _open_dataset(settings: StorageSettings, store_id: str) -> xr.Dataset:
     return xr.open_zarr(path, consolidated=True)
 
 
+def open_dataset_for_tests(settings: StorageSettings, store_id: str) -> xr.Dataset:
+    """Open a demo Zarr store on disk or S3 (tests and notebooks)."""
+    return _open_dataset(settings, store_id)
+
+
 def _build_ok_inventory(
     store_id: str,
     uri: str,
