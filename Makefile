@@ -7,15 +7,15 @@ COMPOSE := docker compose -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE)
 
 RUFF_PATHS := src tests
 
-.PHONY: help check check-docs check-notebooks test api ui build up up-d down logs minio-up minio-down inventory-export
+.PHONY: help check check-notebooks test api ui build up up-d down logs minio-up minio-down inventory-export
 
-INVENTORY_EXPORT := docs/data-plane/inventory-export.json
+INVENTORY_EXPORT := config/inventory-export.json
 
 help:
 	@echo "Local dev (requires: uv sync; ui also needs bun install in $(VIEWER_DIR))"
 	@echo "pytest: make test (integration + unit) · e2e: make up → Cursor /test"
 	@echo ""
-	@echo "  make check             ruff (src, tests) + format + docs smoke + pytest"
+	@echo "  make check             ruff (src, tests) + format + pytest"
 	@echo "  make check-notebooks   optional ruff on notebooks/"
 	@echo "  make test              pytest (tests/integration, tests/unit)"
 	@echo "  make api               FastAPI via uvicorn (reload; port from GEOAICUBES_API_PORT)"
@@ -32,12 +32,7 @@ help:
 check:
 	uv run ruff check $(RUFF_PATHS)
 	uv run ruff format --check $(RUFF_PATHS)
-	$(MAKE) check-docs
 	$(MAKE) test
-
-check-docs:
-	@test -s docs/demo-config.md
-	@test -s docs/program/preflight-log.md
 
 check-notebooks:
 	uv run ruff check notebooks

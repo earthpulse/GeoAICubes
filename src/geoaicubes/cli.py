@@ -13,7 +13,7 @@ import typer
 from geoaicubes import __version__
 from geoaicubes.logging_config import configure_logging
 
-DEFAULT_INVENTORY_EXPORT = Path("docs/data-plane/inventory-export.json")
+DEFAULT_INVENTORY_EXPORT = Path("config/inventory-export.json")
 
 app = typer.Typer(
     name="geoaicubes",

@@ -2,7 +2,7 @@
 
 Step 1 discovery viewer under `apps/viewer/`. The UI talks to the API only: `GET /health`, `GET /api/v1/inventory/zarr`, and TiTiler tile URLs from inventory templates (no Zarr/Xarray in the browser).
 
-Layout and data flow: [`docs/data-plane/viewer-ia.md`](../../docs/data-plane/viewer-ia.md).
+Layout: inventory-driven layers, map tiles from API `tile_url_template` only (see `src/geoaicubes/api/schemas/inventory.py`).
 
 ## Setup
 
@@ -29,4 +29,4 @@ Terminal: **`make up`** · Cursor: **`/test`** (browser on http://localhost:5173
 
 Optional without Docker: `make api` + `make ui`.
 
-Python checks from repo root: **`make check`** (see `docs/scaffold.md`).
+Python checks from repo root: **`make check`** (see repo `README.md`).

@@ -1,6 +1,6 @@
 # GeoAICubes API — CPU-only; install with uv from repo root build context.
 # GeoDataCube Zarrs are not baked into the image: Compose bind-mounts host ../data:/data:ro
-# (see deploy/docker-compose.yml and docs/demo-config.md).
+# (see deploy/docker-compose.yml and config/.env.example).
 FROM python:3.12-slim-bookworm
 
 # Rasterio/TiTiler wheels expect GDAL and expat at runtime (not bundled in slim).

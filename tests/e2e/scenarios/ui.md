@@ -18,11 +18,11 @@ ui_url: http://localhost:5173/
 
 With **`make up`** running, exercise the **Step 1** discovery viewer: **layer list** from inventory, **Leaflet map tiles** from API TiTiler templates, and **validation errors** surfaced inline (per-store `status: "error"`). Capture **one screenshot** after map preview is enabled.
 
-Contract: [`docs/data-plane/viewer-ia.md`](../../../docs/data-plane/viewer-ia.md).
+Contract: API inventory shapes (`src/geoaicubes/api/schemas/inventory.py`) and viewer `apps/viewer/README.md`.
 
 ## Operator prerequisite
 
-**`make up`** with API healthy on `:8000` and Zarr tree under `data/GEODATACUBE_ZARR_openEO/` (see [`docs/demo-config.md`](../../../docs/demo-config.md)).
+**`make up`** with API healthy on `:8000` and Zarr tree under `data/GEODATACUBE_ZARR_openEO/` (see `README.md` and `config/.env.example`).
 
 ## Constants
 

@@ -1,4 +1,5 @@
 data
+docs/
 .venv
 tests/e2e/user-reports/
 tests/user-reports/

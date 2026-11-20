@@ -2,7 +2,7 @@
 
 Format (stderr): ``%(asctime)s | %(levelname)s | %(name)s | %(message)s``
 (``%Y-%m-%d %H:%M:%S``). Level from ``GEOAICUBES_LOG_LEVEL`` (default ``INFO``).
-Documented in ``docs/demo-config.md#logging-cli-api-library``.
+See ``README.md`` (logging) and ``GEOAICUBES_LOG_LEVEL`` in ``config/.env.example``.
 """
 
 from __future__ import annotations
