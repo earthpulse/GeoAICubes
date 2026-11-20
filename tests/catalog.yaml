@@ -1,0 +1,11 @@
+# Workflow test catalog — UI only for now.
+#
+#   Terminal: make up
+#   Cursor:   /test
+
+categories:
+  ui:
+    title: Viewer
+    description: MCP browser on :5173 — run make up first.
+    scenarios:
+      - ui

@@ -18,3 +18,9 @@ bun run preview  # serve dist/
 ```
 
 Set `VITE_API_BASE_URL` before `bun run build` when the API is not at `http://localhost:8000` (Compose uses build-time `ARG` in the UI image).
+
+## Workflow test
+
+Terminal: **`make up`** · Cursor: **`/test`** (browser on http://localhost:5173/, one screenshot).
+
+Optional without Docker: `make api` + `make ui`.

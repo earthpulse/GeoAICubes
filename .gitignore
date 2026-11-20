@@ -1,5 +1,6 @@
 data
 .venv
+tests/user-reports/
 .cursor/*
 references/
 tasks/
