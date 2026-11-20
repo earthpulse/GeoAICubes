@@ -1,0 +1,28 @@
+# Mirrors local: uv sync (dev group) + make check
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install (frozen lockfile, dev tools)
+        run: uv sync --frozen --group dev
+
+      - name: Lint, format, tests
+        run: make check

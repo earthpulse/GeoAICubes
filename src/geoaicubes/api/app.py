@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from contextlib import asynccontextmanager
 from typing import Any
@@ -9,11 +10,9 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import logging
-
 from geoaicubes import __version__
-from geoaicubes.logging_config import configure_logging
 from geoaicubes.api.routes import health
+from geoaicubes.logging_config import configure_logging
 
 logger = logging.getLogger(__name__)
 

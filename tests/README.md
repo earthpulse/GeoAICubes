@@ -1,4 +1,14 @@
-# Workflow test (UI)
+# Tests
+
+## Automated (pytest)
+
+```bash
+make check    # or: uv run pytest
+```
+
+Smoke tests live next to this file (`test_health.py`). UI workflow reports stay under `user-reports/` (gitignored).
+
+## Workflow test (UI)
 
 ```text
 Terminal:  make up    # keep running
