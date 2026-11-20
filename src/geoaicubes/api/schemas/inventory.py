@@ -31,6 +31,39 @@ class InventoryTime(BaseModel):
     count: int | None = None
 
 
+RenderMode = Literal["rgb", "single", "categorical"]
+
+
+class ExtraDimInfo(BaseModel):
+    name: str
+    kind: Literal["nominal", "ordinal", "datetime"]
+    labels: list[str]
+
+
+class RenderDefaults(BaseModel):
+    mode: RenderMode
+    sel: dict[str, list[str]] = Field(default_factory=dict)
+    bidx: list[int] | None = None
+    rescale: list[tuple[float, float]]
+    colormap_name: str | None = None
+    colormap: dict[int, list[int]] | None = None
+
+
+class LegendEntry(BaseModel):
+    value: int
+    label: str
+    color: str
+
+
+class RenderCapability(BaseModel):
+    modes: list[RenderMode]
+    variable: str
+    extra_dims: list[ExtraDimInfo]
+    defaults: RenderDefaults
+    legend: list[LegendEntry] = Field(default_factory=list)
+    primary: bool = False
+
+
 class ZarrStoreInventory(BaseModel):
     id: str
     uri: str
@@ -45,6 +78,7 @@ class ZarrStoreInventory(BaseModel):
     nodata: dict[str, float | int | None]
     chunks: dict[str, dict[str, int]]
     tile_url_template: dict[str, str]
+    render_capabilities: dict[str, RenderCapability] = Field(default_factory=dict)
 
 
 class ZarrInventoryList(BaseModel):

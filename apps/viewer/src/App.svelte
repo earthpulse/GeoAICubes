@@ -5,6 +5,7 @@
   import LayerList from './lib/LayerList.svelte'
   import MetadataPanel from './lib/MetadataPanel.svelte'
   import TimeStepper from './lib/TimeStepper.svelte'
+  import VisualizationPanel from './lib/VisualizationPanel.svelte'
   import MapView from './lib/MapView.svelte'
 
   const apiBase = normalizeApiBase(import.meta.env.VITE_API_BASE_URL)
@@ -122,6 +123,11 @@
           store={inv.selectedStore}
           timeIndex={selectedTimeIndex()}
           onChange={onTimeChange}
+        />
+        <VisualizationPanel
+          store={inv.selectedStore}
+          layers={inv.mapLayers}
+          onRenderChange={(layerId, state) => inv.setLayerRenderState(layerId, state)}
         />
       {/if}
       <MetadataPanel store={inv.selectedStore} />

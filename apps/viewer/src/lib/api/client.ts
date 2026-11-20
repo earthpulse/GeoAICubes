@@ -1,4 +1,5 @@
-import type { ZarrInventoryList, ZarrStoreInventory } from '../types/inventory.ts'
+import type { ZarrInventoryList, MapLayer, ZarrStoreInventory } from '../types/inventory.ts'
+import { buildTileUrlFromTemplate } from '../render/buildTileUrl.ts'
 
 export class ApiError extends Error {
   constructor(
@@ -69,16 +70,25 @@ export function withTimeSelection(resolvedUrl: string, timeLabel: string | null)
   return `${base}?${parts.join('&')}`
 }
 
-export function tileUrlForLayer(
-  apiBase: string,
-  template: string,
-  store: import('../types/inventory.ts').ZarrStoreInventory,
-  timeIndex: number,
-): string {
-  let url = resolveTileTemplate(apiBase, template)
-  const values = store.time?.values
-  if (values && values.length > timeIndex) {
-    url = withTimeSelection(url, values[timeIndex])
+export function tileUrlForLayer(apiBase: string, layer: MapLayer): string {
+  const cap = layer.store.render_capabilities?.[layer.variable]
+  if (!cap) {
+    let url = resolveTileTemplate(apiBase, layer.tileUrlTemplate)
+    const values = layer.store.time?.values
+    if (values && values.length > layer.timeIndex) {
+      url = withTimeSelection(url, values[layer.timeIndex])
+    }
+    return url
   }
-  return url
+  return resolveTileTemplate(
+    apiBase,
+    buildTileUrlFromTemplate(
+      layer.tileUrlTemplate,
+      cap,
+      layer.renderState,
+      layer.store,
+      layer.variable,
+      layer.timeIndex,
+    ),
+  )
 }

@@ -20,6 +20,11 @@ from geoaicubes.api.schemas.inventory import (
     ZarrStoreInventory,
 )
 from geoaicubes.config import StorageSettings, get_storage_settings
+from geoaicubes.io.render import (
+    encode_query_pairs,
+    infer_store_render_capabilities,
+    titiler_query_from_defaults,
+)
 from geoaicubes.io.s3 import get_s3_filesystem, zarr_mapper_for_uri
 
 logger = logging.getLogger(__name__)
@@ -122,8 +127,9 @@ def _build_ok_inventory(
     time_info = extract_time(ds)
     nodata = {v.name: _var_nodata(ds, v.name) for v in variables}
     chunks = {v.name: _var_chunks(ds, v.name) for v in variables}
+    render_capabilities = infer_store_render_capabilities(ds, time_info)
     tile_url_template = _tile_templates(
-        store_id, ds, uri, path, time_info, settings, crs
+        store_id, ds, uri, path, time_info, settings, crs, render_capabilities
     )
     return ZarrStoreInventory(
         id=store_id,
@@ -139,6 +145,7 @@ def _build_ok_inventory(
         nodata=nodata,
         chunks=chunks,
         tile_url_template=tile_url_template,
+        render_capabilities=render_capabilities,
     )
 
 
@@ -162,6 +169,7 @@ def _error_inventory(
         nodata={},
         chunks={},
         tile_url_template={},
+        render_capabilities={},
     )
 
 
@@ -348,13 +356,6 @@ def _tile_dataset_url(
     return uri
 
 
-def _default_rescale(dtype: str) -> str:
-    normalized = dtype.lower()
-    if normalized in {"uint8", "int8"} or normalized.startswith("uint"):
-        return "0,65535" if "16" in normalized else "0,255"
-    return "0,3000"
-
-
 def _tile_templates(
     store_id: str,
     ds: xr.Dataset,
@@ -363,11 +364,9 @@ def _tile_templates(
     time_info: InventoryTime | None,
     settings: StorageSettings,
     crs: str | None,
+    render_capabilities: dict,
 ) -> dict[str, str]:
     dataset_url = quote(_tile_dataset_url(store_id, uri, path, settings), safe="")
-    time_sel = ""
-    if time_info and time_info.start:
-        time_sel = f"&sel=time={quote(time_info.start, safe='')}"
     crs_sel = f"&coord_crs={quote(crs, safe='')}" if crs else ""
 
     templates: dict[str, str] = {}
@@ -376,11 +375,13 @@ def _tile_templates(
         if not _is_renderable(da.dims):
             continue
         variable = quote(name, safe="")
-        rescale = quote(_default_rescale(str(da.dtype)), safe=",")
-        query = (
-            f"url={dataset_url}&variable={variable}&rescale={rescale}"
-            f"{time_sel}{crs_sel}"
-        )
+        cap = render_capabilities.get(name)
+        if cap is None:
+            continue
+        time_label = time_info.start if time_info else None
+        vis_pairs = titiler_query_from_defaults(cap, time_label=time_label)
+        vis_q = encode_query_pairs(vis_pairs)
+        query = f"url={dataset_url}&variable={variable}&{vis_q}{crs_sel}"
         templates[name] = (
             f"{TILE_URL_PREFIX}/tiles/{TILE_MATRIX_SET}/{{z}}/{{x}}/{{y}}.png?{query}"
         )

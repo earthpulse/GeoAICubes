@@ -1,11 +1,13 @@
 import { fetchInventory, fetchStore } from '../api/client.ts'
-import type { MapLayer, ZarrStoreInventory } from '../types/inventory.ts'
+import { initialRenderState } from '../render/buildTileUrl.ts'
+import type { LayerRenderState, MapLayer, ZarrStoreInventory } from '../types/inventory.ts'
 
 export function buildMapLayers(stores: ZarrStoreInventory[]): MapLayer[] {
   const layers: MapLayer[] = []
   for (const store of stores) {
     const templates = store.tile_url_template ?? {}
     for (const [variable, tileUrlTemplate] of Object.entries(templates)) {
+      const cap = store.render_capabilities?.[variable]
       layers.push({
         layerId: `${store.id}::${variable}`,
         storeId: store.id,
@@ -15,6 +17,11 @@ export function buildMapLayers(stores: ZarrStoreInventory[]): MapLayer[] {
         visible: false,
         timeIndex: 0,
         store,
+        renderState: cap ? initialRenderState(cap) : {
+          mode: 'single',
+          bandDim: null,
+          bandSelection: [],
+        },
       })
     }
     if (store.status === 'error' || Object.keys(templates).length === 0) {
@@ -27,6 +34,7 @@ export function buildMapLayers(stores: ZarrStoreInventory[]): MapLayer[] {
         visible: false,
         timeIndex: 0,
         store,
+        renderState: { mode: 'single', bandDim: null, bandSelection: [] },
       })
     }
   }
@@ -126,6 +134,12 @@ export function createInventoryState(apiBase: string): InventoryState {
     )
   }
 
+  function setLayerRenderState(layerId: string, renderState: LayerRenderState) {
+    mapLayers = mapLayers.map((layer) =>
+      layer.layerId === layerId ? { ...layer, renderState } : layer,
+    )
+  }
+
   const selected = $derived(stores.find((s) => s.id === selectedStoreId) ?? null)
 
   const visibleLayers = $derived(
@@ -168,5 +182,6 @@ export function createInventoryState(apiBase: string): InventoryState {
     selectStore,
     toggleLayerVisibility,
     setTimeIndex,
+    setLayerRenderState,
   }
 }

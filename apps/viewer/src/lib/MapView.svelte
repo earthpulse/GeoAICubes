@@ -58,7 +58,7 @@
     }
 
     for (const layer of visible) {
-      const url = tileUrlForLayer(apiBase, layer.tileUrlTemplate, layer.store, layer.timeIndex)
+      const url = tileUrlForLayer(apiBase, layer)
       const existing = overlayById.get(layer.layerId)
       if (existing?.url === url) {
         continue

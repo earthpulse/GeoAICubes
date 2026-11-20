@@ -99,6 +99,11 @@ def test_inventory_golden_store_schema_fields(client: TestClient) -> None:
     assert parsed.chunks["data"]["y"] == 512
     assert parsed.chunks["data"]["x"] == 512
 
+    assert "data" in parsed.render_capabilities
+    cob_cap = parsed.render_capabilities["data"]
+    assert cob_cap.defaults.mode == "categorical"
+    assert cob_cap.primary is True
+
     template = parsed.tile_url_template.get("data", "")
     assert template.startswith("/tiles/zarr/")
     assert "variable=data" in template

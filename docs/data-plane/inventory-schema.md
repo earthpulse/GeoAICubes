@@ -41,6 +41,7 @@ Per-store record. Checklist fields match the table below exactly.
 | [`nodata`](#nodata) | object | yes | Per-variable nodata; keys = variable names; `null` value if unset; `{}` on error |
 | [`chunks`](#chunks) | object | yes | Per-variable Zarr chunking; see [chunks](#chunks); `{}` on error |
 | [`tile_url_template`](#tile_url_template) | object | yes | Per **renderable** variable tile URL templates; see below; `{}` if none |
+| [`render_capabilities`](#render_capabilities) | object | yes | Per-variable TiTiler visualization metadata inferred from dims/coords; `{}` on error |
 
 ### `id`
 
@@ -134,6 +135,12 @@ Example (illustrative — exact path finalized in I5/I4):
   "data": "/tiles/zarr/{id}/{variable}/{z}/{x}/{y}.png"
 }
 ```
+
+### `render_capabilities`
+
+Map **variable name → visualization profile** for the viewer (and template defaults). Inferred from Xarray dimensions/coordinates — **not** from store filenames.
+
+Each value includes: `modes` (`rgb` \| `single` \| `categorical`), `extra_dims` (band/time labels), `defaults` (TiTiler `sel` / `bidx` / `rescale` / optional `colormap`), and optional `legend` entries for categorical previews.
 
 ## Example (`status: "ok"`)
 
